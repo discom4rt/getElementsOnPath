@@ -24,6 +24,6 @@ If an element is totally obscured by another one, it will not appear in the resu
 
 ## Future Considerations
 
+* Options for excluding elements, finding the first element of type, etc.
+* Support n number of points by using some sort of interpolant (barycentric langrangian?)
 * Look into improving performance
-* Bullet proof dimensions?
-* Support n number of points by using some sort of interpolation (barycentric langrangian?)
