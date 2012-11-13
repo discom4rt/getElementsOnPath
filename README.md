@@ -11,7 +11,8 @@ Pretty straightforward I think!
 ### Example
 
 	// get all the elements on a diagonal through the page and turn them red
-	var elements = document.getElementsOnPath( 0, 0, 1, 1 ),
+	var documentRect = document.documentElement.getBoundingClientRect(),
+		elements = document.getElementsOnPath( 0, 0, documentRect.right, documentRect.bottom ),
 		i = elements.length;
 
 	while( i-- ) {
@@ -21,11 +22,8 @@ Pretty straightforward I think!
 ## Caveats
 If an element is totally obscured by another one, it will not appear in the results (&lt;html&gt; by &lt;body&gt;, for example).
 
-For now, using big differences between points skips over the elements between them (see Future Considerations below).
-
 ## Future Considerations
 
-* Scale t parameter granularity to 1 pixel level automatically so that document.getElementsOnPath( 0, 0, 1000, 1000 ) doesn't skip over elements between (0, 0) and (1000, 1000)
 * Look into improving performance
 * Bullet proof dimensions?
 * Support n number of points by using some sort of interpolation (barycentric langrangian?)

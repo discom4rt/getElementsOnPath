@@ -2,7 +2,7 @@
 
   /**
    * Retrieve all the elements on the line that passes through (x1, y1) and (x2, y2) starting from (x1, y1), headed
-   * in the direction of (x2, y2).
+   * in the direction of (x2, y2). I know it's sort of a no-no to augment a native object but, I'm doing it anyways.
    *
    * @param {number} x1 The x coordinate of the starting point.
    * @param {number} y1 The y coordinate of the starting point.
@@ -18,27 +18,32 @@
       maxY = documentRect.bottom,
       results = [],
       exists = {},
-      t = 2,
-      currentPoint = getPoint( x1, y1, x2, y2, t ),
-      currentElement,
+      tx = 1/(x2 - x1),         // Determine the t increment
+      ty = 1/(y2 - y1),         // that will keep us
+      ti = Math.min( tx, ty ),  // advancing pixel by pixel
+      t = ti,
+      currX = getCoordinate( x1, x2, t ),
+      currY = getCoordinate( y1, y2, t ),
+      currElement,
       lastElement,
       hash;
 
-    while( currentPoint.x > minX && currentPoint.x < maxX && currentPoint.y > minY && currentPoint.y < maxY ){
-      currentElement = document.elementFromPoint( currentPoint.x, currentPoint.y );
+    while( currX > minX && currX < maxX && currY > minY && currY < maxY ){
+      currElement = document.elementFromPoint( currX, currY );
 
-      if( lastElement !== currentElement ) {
-        hash = hashCode( currentElement );
+      if( lastElement !== currElement ) {
+        hash = hashCode( currElement );
 
         if( !exists[ hash ] ) {
-            results.push( currentElement );
-            exists[ hash ] = currentElement;
+            results.push( currElement );
+            exists[ hash ] = currElement;
         }
       }
 
-      lastElement = currentElement;
-      t += 1;
-      currentPoint = getPoint( x1, y1, x2, y2, t );
+      t += ti;
+      currX = getCoordinate( x1, x2, t );
+      currY = getCoordinate( y1, y2, t );
+      lastElement = currElement;
     }
 
     return results;
@@ -59,20 +64,16 @@
   };
 
   /**
-   * Retrieve the coordinate pair for the parametric equation of the line passing through (x1, y1) and (x2, y2) at t.
+   * Retrieve a coordinate for the parameterized linear quation at t given starting coordinate c1
+   * and ending coordinate c2.
    *
-   * @param {number} x1 The x coordinate of the starting point.
-   * @param {number} y1 The y coordinate of the starting point.
-   * @param {number} x2 The x coordinate of the ending point.
-   * @param {number} y2 The y coordinate of the ending point.
+   * @param {number} c1 The x coordinate of the starting point.
+   * @param {number} c2 The y coordinate of the starting point.
    * @param {number} t The parameter defining the point to return.
-   * @return {object} The x and y coordinates of the point on the line passing through (x1, y1) and (x2, y2) at t.
+   * @return {number} The coordinate value at t.
    **/
-  var getPoint = function( x1, y1, x2, y2, t ) {
-    return {
-        x: Math.ceil( (1 - t) * x1 + t * x2 ),
-        y: Math.ceil( (1 - t) * y1 + t * y2 )
-    };
+  var getCoordinate = function( c1, c2, t ) {
+    return Math.ceil( (1 - t) * c1 + t * c2 );
   };
 
 })( window, document );
