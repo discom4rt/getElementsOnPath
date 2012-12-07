@@ -1,16 +1,23 @@
 (function( window, document, undefined ) {
 
+var elProto = window.Element.prototype,
+  matcher = elProto.matchesSelector || elProto.mozMatchesSelector ||
+          elProto.webkitMatchesSelector || elProto.oMatchesSelector ||
+          elProto.msMatchesSelector || isSelectedBy;
+
   /**
    * Retrieve all the elements on the line that passes through (x1, y1) and (x2, y2) starting from (x1, y1), headed
    * in the direction of (x2, y2). I know it's sort of a no-no to augment a native object but, I'm doing it anyways.
    *
-   * @param {number} x1 The x coordinate of the starting point.
-   * @param {number} y1 The y coordinate of the starting point.
-   * @param {number} x2 The x coordinate of the ending point.
-   * @param {number} y2 The y coordinate of the ending point.
-   * @return {array} A list of elements that fall on the line defined by (x1, y1) and (x2, y2).
+   * @param {Number} x1 The x coordinate of the starting point.
+   * @param {Number} y1 The y coordinate of the starting point.
+   * @param {Number} x2 The x coordinate of the ending point.
+   * @param {Number} y2 The y coordinate of the ending point.
+   * @param {String} selector A string with which to test element matching.
+   * @param {Boolean} first If the first found element should be returned.
+   * @return {Array} A list of elements that fall on the line defined by (x1, y1) and (x2, y2).
    **/
-  document.getElementsOnPath = function( x1, y1, x2, y2 ) {
+  document.getElementsOnPath = function( x1, y1, x2, y2, selector, first ) {
     var documentRect = document.documentElement.getBoundingClientRect(),
       minX = documentRect.left,
       minY = documentRect.top,
@@ -34,10 +41,15 @@
       if( lastElement !== currElement ) {
         hash = hashCode( currElement );
 
-        if( !exists[ hash ] ) {
+        if( !exists[ hash ] && matcher.call( currElement, selector ) ) {
             results.push( currElement );
             exists[ hash ] = currElement;
         }
+      }
+
+      // if we got something good, give it to em
+      if( first && results.length ) {
+        return results[ 0 ];
       }
 
       t += ti;
@@ -50,30 +62,62 @@
   };
 
   /**
-   * Generate a hash code for an element based on its nodeName and position.  This is definitely fudging it
-   * a little bit with the hope of being more performant; it would probably be more expensive to generate an
-   * unique xpath or selector string.
+   * Retrieve the first element on the line that passes through (x1, y1) and (x2, y2) starting from (x1, y1), headed
+   * in the direction of (x2, y2). This is a convenience method that proxies to getElementsOnPath.
    *
-   * @param {HTMLElement} element The element for which to generate the hash code.
-   * @return {string} The hash code for the given element.
+   * @param {Number} x1 The x coordinate of the starting point.
+   * @param {Number} y1 The y coordinate of the starting point.
+   * @param {Number} x2 The x coordinate of the ending point.
+   * @param {Number} y2 The y coordinate of the ending point.
+   * @param {String} selector A string with which to test element matching.
+   * @return {Array} A list of elements that fall on the line defined by (x1, y1) and (x2, y2).
    **/
-  var hashCode = function( element ) {
-    var elementRect = element.getBoundingClientRect();
-
-    return element.nodeName + elementRect.top + elementRect.right + elementRect.bottom + elementRect.left;
+  document.getFirstElementOnPath = function( x1, y1, x2, y2, selector ) {
+    return document.getElementsOnPath( x1, y1, x2, y2, selector, true );
   };
 
   /**
    * Retrieve a coordinate for the parameterized linear quation at t given starting coordinate c1
    * and ending coordinate c2.
    *
-   * @param {number} c1 The x coordinate of the starting point.
-   * @param {number} c2 The y coordinate of the starting point.
-   * @param {number} t The parameter defining the point to return.
-   * @return {number} The coordinate value at t.
+   * @param {Number} c1 The x coordinate of the starting point.
+   * @param {Number} c2 The y coordinate of the starting point.
+   * @param {Number} t The parameter defining the point to return.
+   * @return {Number} The coordinate value at t.
    **/
-  var getCoordinate = function( c1, c2, t ) {
+  function getCoordinate( c1, c2, t ) {
     return Math.ceil( (1 - t) * c1 + t * c2 );
-  };
+  }
+
+  /**
+   * Generate a hash code for an element based on its nodeName and position.  This is definitely fudging it
+   * a little bit with the hope of being more performant; it would probably be more expensive to generate an
+   * unique xpath or selector string.
+   *
+   * @param {HTMLElement} element The element for which to generate the hash code.
+   * @return {String} The hash code for the given element.
+   **/
+  function hashCode( element ) {
+    var elementRect = element.getBoundingClientRect();
+
+    return element.nodeName + elementRect.top + elementRect.right + elementRect.bottom + elementRect.left;
+  }
+
+  /**
+   * Determines whether this element matches the given selector in a very primitive way by
+   * checking if the nodename, id, or className matches the selector.
+   *
+   * @param {String} selector The selector representing the matching criteria.
+   * @return {Boolean} True if the selector matches or is missing, false otherwise.
+   **/
+  function isSelectedBy( selector ) {
+    // ooh, lord this is some cray hacky de-selectorizing
+    // also, this should probably be cached...
+    if( typeof selector === 'string' ) {
+      selector = selector.replace( /([^#\. :]+)[#\.:]/g, '$1 ' ).replace( /[#\.]/g, '' );
+    }
+
+    return !selector || this.nodename === selector || this.id === selector || this.className === selector;
+  }
 
 })( window, document );
