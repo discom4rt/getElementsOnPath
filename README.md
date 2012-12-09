@@ -5,6 +5,7 @@ Retrieve all the elements that fall on a line defined by two coordinate pairs, s
 
 ## Usage
 **document.getElementsOnPath( x1, y1, x2, y2, [selector, returnFirstElement])**
+
 **document.geFirstElementOnPath( x1, y1, x2, y2, [selector])**
 
 ### Example
