@@ -41,7 +41,7 @@ var elProto = window.Element.prototype,
       if( lastElement !== currElement ) {
         hash = hashCode( currElement );
 
-        if( !exists[ hash ] && matcher.call( currElement, selector ) ) {
+        if( !exists[ hash ] && ( !selector || matcher.call( currElement, selector ) ) ) {
             results.push( currElement );
             exists[ hash ] = currElement;
         }
@@ -117,7 +117,7 @@ var elProto = window.Element.prototype,
       selector = selector.replace( /([^#\. :]+)[#\.:]/g, '$1 ' ).replace( /[#\.]/g, '' );
     }
 
-    return !selector || this.nodename === selector || this.id === selector || this.className === selector;
+    return this.nodename === selector || this.id === selector || this.className === selector;
   }
 
 })( window, document );
