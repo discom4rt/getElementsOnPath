@@ -1,7 +1,7 @@
 # getElementsOnPath
 Retrieve all the elements that fall on a line defined by two coordinate pairs, starting at the first pair and moving in the direction of the second.  Optionally filter the elements returned by a selector and/or just retrieve the first element.
 
-[Check it out on JSFiddle](http://jsfiddle.net/discomfort/2B7nt)
+[Check it out on JSFiddle](http://jsfiddle.net/2B7nt)
 
 ## Usage
 **document.getElementsOnPath( x1, y1, x2, y2, [selector, returnFirstElement] )**
