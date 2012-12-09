@@ -18,7 +18,7 @@ Retrieve all the elements that fall on a line defined by two coordinate pairs, s
 	    var documentRect = document.documentElement.getBoundingClientRect(),
 	      elementsOnPath = document.getElementsOnPath( 0, 0, documentRect.right, documentRect.bottom ),
 	      firstDivOnPath = document.getFirstElementOnPath( 0, 0, documentRect.right, documentRect.bottom, 'div', true ),
-	      i = elements.length;
+	      i = elementsOnPath.length;
 
 	    while( i-- ) {
 	      elementsOnPath[ i ].style.backgroundColor = 'red';
