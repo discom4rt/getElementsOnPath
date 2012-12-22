@@ -58,7 +58,7 @@ var elProto = window.Element.prototype,
       lastElement = currElement;
     }
 
-    return results;
+    return first ? results[ 0 ] : results;
   };
 
   /**
@@ -105,7 +105,8 @@ var elProto = window.Element.prototype,
 
   /**
    * Determines whether this element matches the given selector in a very primitive way by
-   * checking if the nodename, id, or className matches the selector.
+   * checking if the nodename, id, or className matches the selector.  This is supposed to
+   * provide some layer of compatibility with older browsers, but it's pretty crappy.
    *
    * @param {String} selector The selector representing the matching criteria.
    * @return {Boolean} True if the selector matches or is missing, false otherwise.
