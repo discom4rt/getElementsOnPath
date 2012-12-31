@@ -118,7 +118,7 @@ var elProto = window.Element.prototype,
       selector = selector.replace( /([^#\. :]+)[#\.:]/g, '$1 ' ).replace( /[#\.]/g, '' );
     }
 
-    return this.nodename === selector || this.id === selector || this.className === selector;
+    return this.nodeName === selector.toUpperCase() || this.id === selector || this.className === selector;
   }
 
 })( window, document );
